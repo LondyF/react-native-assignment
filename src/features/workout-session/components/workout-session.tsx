@@ -33,7 +33,7 @@ export const WorkoutSession = ({ workoutId, onClose }: WorkoutSessionProps) => {
   const currentStepIndex = 0;
   const currentStep = steps[currentStepIndex];
 
-  if (!currentStep) {
+  if (!currentStep || currentStep.kind === 'rest') {
     return <ErrorState message="This workout has no exercises." onRetry={refetch} />;
   }
 

@@ -1,26 +1,24 @@
-import type { Exercise, SectionKey } from '@/features/workout';
+import type { SectionKey } from '@/features/workout';
 
-import type { ExerciseStep } from './build-steps';
+import type { SetStep, Step } from './step';
 import { getSectionProgress } from './section-progress';
 
-const exercise: Exercise = {
-  id: 'squat',
-  name: 'Squat',
-  thumbnailUrl: 'https://example.com/squat.jpg',
-  bodyParts: [],
-  kind: 'timed',
-  durationSeconds: 30,
-};
+const createSetsWithRests = (sectionKey: SectionKey, setCount: number): Step[] =>
+  Array.from({ length: setCount }, (_, index): Step[] => {
+    const setStep: SetStep = {
+      kind: 'set',
+      sectionKey,
+      exerciseId: 'squat',
+      exerciseName: 'Squat',
+      thumbnailUrl: 'https://example.com/squat.jpg',
+      setNumber: index + 1,
+      setCount,
+      reps: 10,
+    };
+    return [setStep, { kind: 'rest', sectionKey, durationSeconds: 30 }];
+  }).flat();
 
-const createSteps = (sectionKey: SectionKey, setCount: number): ExerciseStep[] =>
-  Array.from({ length: setCount }, (_, index) => ({
-    sectionKey,
-    exercise,
-    setNumber: index + 1,
-    setCount,
-  }));
-
-const steps = [...createSteps('warmUp', 3), ...createSteps('powerSet', 4)];
+const steps = [...createSetsWithRests('warmUp', 3), ...createSetsWithRests('powerSet', 4)];
 
 describe('getSectionProgress', () => {
   it('counts the current set as reached', () => {
@@ -30,15 +28,19 @@ describe('getSectionProgress', () => {
     ]);
   });
 
+  it('does not change the fill during a rest', () => {
+    expect(getSectionProgress(steps, 1)).toEqual(getSectionProgress(steps, 0));
+  });
+
   it('fills earlier sections and part of the current one', () => {
-    expect(getSectionProgress(steps, 4)).toEqual([
+    expect(getSectionProgress(steps, 8)).toEqual([
       { sectionKey: 'warmUp', progress: 1 },
       { sectionKey: 'powerSet', progress: 2 / 4 },
     ]);
   });
 
   it('leaves out sections without steps', () => {
-    expect(getSectionProgress(createSteps('coolDown', 1), 0)).toEqual([
+    expect(getSectionProgress(createSetsWithRests('coolDown', 1), 0)).toEqual([
       { sectionKey: 'coolDown', progress: 1 },
     ]);
   });

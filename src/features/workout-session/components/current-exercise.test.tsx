@@ -1,40 +1,28 @@
 import { render, screen } from '@testing-library/react-native';
 
-import type { ExerciseStep } from '../model/build-steps';
+import type { SetStep, TimedStep } from '../model/step';
 import { CurrentExercise } from './current-exercise';
 
 jest.mock('uniwind', () => ({ withUniwind: <T,>(Component: T) => Component }));
 
-const repsStep: ExerciseStep = {
+const repsStep: SetStep = {
+  kind: 'set',
   sectionKey: 'powerSet',
-  exercise: {
-    id: 'squat',
-    name: 'Hack squat',
-    thumbnailUrl: 'https://example.com/squat.jpg',
-    bodyParts: [],
-    kind: 'reps',
-    sets: [
-      { reps: 10, restSeconds: 20 },
-      { reps: 10, restSeconds: 20 },
-      { reps: 10, restSeconds: 20 },
-    ],
-  },
+  exerciseId: 'squat',
+  exerciseName: 'Hack squat',
+  thumbnailUrl: 'https://example.com/squat.jpg',
   setNumber: 2,
   setCount: 3,
+  reps: 10,
 };
 
-const timedStep: ExerciseStep = {
+const timedStep: TimedStep = {
+  kind: 'timed',
   sectionKey: 'coolDown',
-  exercise: {
-    id: 'plank',
-    name: 'Plank drag',
-    thumbnailUrl: 'https://example.com/plank.jpg',
-    bodyParts: [],
-    kind: 'timed',
-    durationSeconds: 90,
-  },
-  setNumber: 1,
-  setCount: 1,
+  exerciseId: 'plank',
+  exerciseName: 'Plank drag',
+  thumbnailUrl: 'https://example.com/plank.jpg',
+  durationSeconds: 90,
 };
 
 describe('CurrentExercise', () => {

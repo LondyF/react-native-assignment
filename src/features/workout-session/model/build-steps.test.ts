@@ -1,71 +1,53 @@
-import type { Workout } from '@/features/workout';
-
+import { workoutFixture } from './__fixtures__/workout';
 import { buildSteps } from './build-steps';
 
-const workout: Workout = {
-  id: 'workout',
-  name: 'Workout',
-  description: null,
-  level: null,
-  pictureUrl: 'https://example.com/picture.jpg',
-  sections: [
-    {
-      key: 'warmUp',
-      exercises: [
-        {
-          id: 'burpee',
-          name: 'Burpee',
-          thumbnailUrl: 'https://example.com/burpee.jpg',
-          bodyParts: [],
-          kind: 'reps',
-          sets: [
-            { reps: 12, restSeconds: 30 },
-            { reps: 10, restSeconds: 30 },
-          ],
-        },
-      ],
-    },
-    { key: 'powerSet', exercises: [] },
-    {
-      key: 'coolDown',
-      exercises: [
-        {
-          id: 'plank',
-          name: 'Plank',
-          thumbnailUrl: 'https://example.com/plank.jpg',
-          bodyParts: [],
-          kind: 'timed',
-          durationSeconds: 90,
-        },
-      ],
-    },
-  ],
-};
-
 describe('buildSteps', () => {
-  it('creates one step per set, in section order', () => {
-    const steps = buildSteps(workout);
+  const steps = buildSteps(workoutFixture);
 
-    expect(
-      steps.map(({ sectionKey, exercise, setNumber, setCount }) => ({
-        sectionKey,
-        exerciseId: exercise.id,
-        setNumber,
-        setCount,
-      })),
-    ).toEqual([
-      { sectionKey: 'warmUp', exerciseId: 'burpee', setNumber: 1, setCount: 2 },
-      { sectionKey: 'warmUp', exerciseId: 'burpee', setNumber: 2, setCount: 2 },
-      { sectionKey: 'coolDown', exerciseId: 'plank', setNumber: 1, setCount: 1 },
+  it('flattens sets, rests and timed exercises in playback order', () => {
+    expect(steps.map((step) => step.kind)).toEqual([
+      'set',
+      'rest',
+      'set',
+      'rest',
+      'set',
+      'rest',
+      'set',
+      'timed',
     ]);
   });
 
-  it('returns no steps for a workout without exercises', () => {
-    const emptyWorkout: Workout = {
-      ...workout,
-      sections: workout.sections.map((section) => ({ ...section, exercises: [] })),
-    };
+  it('numbers the sets of an exercise', () => {
+    expect(steps[0]).toMatchObject({ setNumber: 1, setCount: 2, reps: 10 });
+    expect(steps[2]).toMatchObject({ setNumber: 2, setCount: 2 });
+  });
 
-    expect(buildSteps(emptyWorkout)).toEqual([]);
+  it('keeps a rest that follows the last set of an exercise when more steps remain', () => {
+    expect(steps[3]).toMatchObject({ kind: 'rest', durationSeconds: 30, sectionKey: 'warmUp' });
+  });
+
+  it('skips a rest with zero seconds', () => {
+    expect(steps[6]).toMatchObject({ kind: 'set', exerciseId: 'pull-up', setNumber: 2 });
+    expect(steps[7]).toMatchObject({ kind: 'timed', durationSeconds: 90 });
+  });
+
+  it('tags every step with its section', () => {
+    expect(steps.map((step) => step.sectionKey)).toEqual([
+      'warmUp',
+      'warmUp',
+      'warmUp',
+      'warmUp',
+      'powerSet',
+      'powerSet',
+      'powerSet',
+      'coolDown',
+    ]);
+  });
+
+  it('never ends on a rest', () => {
+    const [warmUp] = workoutFixture.sections;
+    const restLast = buildSteps({ ...workoutFixture, sections: [warmUp] });
+
+    expect(restLast.at(-1)?.kind).toBe('set');
   });
 });
