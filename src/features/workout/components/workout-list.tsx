@@ -25,6 +25,7 @@ export const WorkoutList = ({ onSelectWorkout }: WorkoutListProps) => {
 
   const renderWorkout = ({ item }: { item: Workout }) => {
     const handlePress = () => onSelectWorkout(item.id);
+
     const summary = [item.level, `${getExercises(item).length} exercises`]
       .filter(Boolean)
       .join(' · ');
