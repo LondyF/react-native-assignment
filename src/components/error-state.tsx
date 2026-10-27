@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { PrimaryButton } from './primary-button';
+import { Button } from './button';
 
 type ErrorStateProps = {
   message: string;
@@ -12,6 +12,6 @@ export const ErrorState = ({ message, onRetry }: ErrorStateProps) => (
     <Text accessibilityRole="alert" className="text-center font-body text-sm text-ink-muted">
       {message}
     </Text>
-    <PrimaryButton label="Try again" onPress={onRetry} />
+    <Button label="Try again" onPress={onRetry} />
   </View>
 );
