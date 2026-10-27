@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Workout Player",
+    "slug": "workout-player",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "workoutplayer",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.londymartina.workoutplayer",
+      "icon": "./assets/expo.icon"
+    },
+    "android": {
+      "package": "com.londymartina.workoutplayer",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FBF6EE",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
