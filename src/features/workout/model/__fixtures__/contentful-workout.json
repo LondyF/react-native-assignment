@@ -1,0 +1,53 @@
+{
+  "sys": { "id": "1qxS37UJepjiXhLPVqM8tX" },
+  "name": "Medium intensity workout",
+  "description": "This is an medium intensity workout",
+  "levelIndex": ["Beginner", "Intermediate"],
+  "warmUp": [
+    {
+      "id": "20GhLvNUZZQm3AKsC2ayS9",
+      "name": "Burpee jump up push up - Bodyweight - male",
+      "reps": [12, 10, 8],
+      "rest": [30, 30, 30],
+      "duration": 0,
+      "vixyVideo": "0_4j3rw31s",
+      "durationBased": false
+    }
+  ],
+  "powerSet": [
+    {
+      "id": "4UggMmQksusOkbX58sGeed",
+      "name": "Pull-up wide grip - Functional zone rack - Pull up - Female",
+      "reps": [12, 12, 12],
+      "rest": [60, 60],
+      "duration": 0,
+      "vixyVideo": "0_eqrluipi",
+      "durationBased": false,
+      "bodyPartsIndex": ["Back"]
+    },
+    {
+      "id": "1CMCYR6E79U8rz4ulDNxV4",
+      "name": "Hack squat - Plate loaded - Male",
+      "reps": [10, 10, 10],
+      "rest": ["20", "", 20],
+      "duration": 0,
+      "vixyVideo": "0_y17m7045",
+      "durationBased": false,
+      "bodyPartsIndex": ["Legs"]
+    }
+  ],
+  "coolDown": [
+    {
+      "id": "5YPtT9bCXhwyuhn6Hh09Ts",
+      "name": "Kettlebell - Plank drag - Female",
+      "reps": [],
+      "rest": [],
+      "duration": [0, 1, 30],
+      "vixyVideo": "0_kgltta20",
+      "durationBased": true
+    }
+  ],
+  "picture": {
+    "url": "https://images.ctfassets.net/ztnn01luatek/1UcVsJg9xrZUKmZP7m7DAj/924f205dfbbffce077afc7706501b26d/webimage-R37_BOOTY-BOX_NL_DAMIEN-SANNE"
+  }
+}
