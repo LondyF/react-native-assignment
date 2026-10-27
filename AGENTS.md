@@ -5,6 +5,7 @@ React Native workout player for a take-home assignment: Expo SDK 58, TypeScript,
 ## Map
 
 - `docs/assignment.md`: the brief, the requirements and what is evaluated. `docs/example-design.png` is the design.
+- `docs/design-system.md`: colour, font and text-role tokens. Read before styling any UI; use its tokens, never raw hex or font names.
 - `docs/adr/`: why the stack is what it is. Read the relevant ADR before changing state, persistence, data fetching or styling.
 - `GLOSSARY.md`: domain vocabulary. Use its terms in code and names.
 - `docs/ai-usage.md`: log of AI-assisted work, required by the brief. Append an entry after AI-assisted work, creating the file if it is missing.

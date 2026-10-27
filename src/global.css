@@ -1,2 +1,22 @@
 @import 'tailwindcss';
 @import 'uniwind';
+
+@theme {
+  --color-primary: #582db0;
+  --color-accent: #ea6b1f;
+  --color-background: #fbf7f0;
+  --color-surface: #ffffff;
+  --color-track: #e8d6c0;
+  --color-chip: #ffe8d7;
+  --color-border: #e5e5e5;
+  --color-ink: #262626;
+  --color-ink-muted: #444444;
+  --color-ink-subtle: #909090;
+  --color-scrim: rgb(0 0 0 / 0.5);
+  --color-celebrate-from: #f7d39a;
+  --color-celebrate-to: #f0e4d2;
+
+  --font-heading: 'Archivo_800ExtraBold';
+  --font-label: 'Archivo_600SemiBold';
+  --font-body: 'Archivo_400Regular';
+}
