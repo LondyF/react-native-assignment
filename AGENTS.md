@@ -1,41 +1,33 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+# Workout Player
 
-## Expo has changed — do not trust your training data
+React Native workout player for a take-home assignment: Expo SDK 58, TypeScript, Expo Router.
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+## Map
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+- `docs/assignment.md`: the brief, the requirements and what is evaluated. `docs/example-design.png` is the design.
+- `docs/adr/`: why the stack is what it is. Read the relevant ADR before changing state, persistence, data fetching or styling.
+- `GLOSSARY.md`: domain vocabulary. Use its terms in code and names.
+- `docs/ai-usage.md`: log of AI-assisted work, required by the brief. Append an entry after AI-assisted work, creating the file if it is missing.
 
-## Commands
+## Verify
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+`bun run check` runs lint, Prettier, `tsc` and tests. Run it before declaring any task done.
 
-```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
-```
+## Layout
 
-Run lint and typecheck before declaring any task done.
+- `src/app/`: Expo Router routes only. Components, hooks and logic live elsewhere.
+- `src/lib/`: shared infrastructure (MMKV storage adapter, query client).
+- Feature code goes in `src/features/<feature>/`, with tests beside the code they cover.
+- Import with the `@/` alias for `src/`.
 
-## Navigation & Routing
+## Conventions
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
-
-## Building with EAS
-
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
+- Style with Uniwind `className`. Animated styles use the `style` prop ([ADR 0004](docs/adr/0004-uniwind-with-stylesheet-fallback.md)).
+- Keep workout logic in a pure reducer with unit tests. The Zustand store only wraps it ([ADR 0002](docs/adr/0002-reducer-in-zustand-persisted-to-mmkv.md)).
+- Validate everything from the API with Zod before it reaches the UI ([ADR 0003](docs/adr/0003-plain-fetch-and-zod-over-graphql-client.md)).
+- Record hard-to-reverse decisions as a new ADR in `docs/adr/`.
 
 ## Rules
 
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+- Prefer expo packages over custom libraries
+- Don't reinvent the wheel
