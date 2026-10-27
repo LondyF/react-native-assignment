@@ -7,4 +7,20 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*', 'src/uniwind-types.d.ts', '.agents/*'],
   },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/*/*'],
+              message: 'Import from the feature index, e.g. @/features/workout.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);

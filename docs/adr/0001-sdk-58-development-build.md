@@ -5,7 +5,7 @@ We run Expo SDK 58 (React Native 0.88, React 19.3) in a development build (`bun 
 ## Considered Options
 
 - **SDK 57 in Expo Go**: reviewers scan a QR code, but the project breaks when the store Expo Go moves to SDK 58, and it rules out MMKV.
-- **SDK 58 with only Expo Go-compatible libraries**: would force `expo-sqlite/kv-store` (async, see [ADR 0002](0002-reducer-in-zustand-persisted-to-mmkv.md)) for a benefit that is only theoretical until Expo Go ships.
+- **SDK 58 with only Expo Go-compatible libraries**: would force `expo-sqlite/kv-store` (async, see [ADR 0002](0002-zustand-store-persisted-to-mmkv.md)) for a benefit that is only theoretical until Expo Go ships.
 
 ## Consequences
 
