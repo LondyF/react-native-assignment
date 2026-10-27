@@ -1,11 +1,10 @@
 import { Slot } from 'expo-router';
-
-import { SafeAreaView } from '@/components/safe-area-view';
+import { View } from 'react-native';
 
 const MainLayout = () => (
-  <SafeAreaView edges={['top']} className="flex-1 bg-background">
+  <View className="flex-1 bg-background">
     <Slot />
-  </SafeAreaView>
+  </View>
 );
 
 export default MainLayout;

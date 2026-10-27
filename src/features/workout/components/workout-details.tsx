@@ -1,3 +1,4 @@
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -15,6 +16,7 @@ type WorkoutDetailsProps = {
 
 export const WorkoutDetails = ({ workoutId, children }: WorkoutDetailsProps) => {
   const { data: workout, isPending, refetch } = useWorkout(workoutId);
+  const headerHeight = useHeaderHeight();
 
   if (isPending) {
     return <LoadingState />;
@@ -29,7 +31,7 @@ export const WorkoutDetails = ({ workoutId, children }: WorkoutDetailsProps) => 
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView contentContainerClassName="pb-4">
+      <ScrollView contentInsetAdjustmentBehavior="never" contentContainerClassName="pb-4">
         {workout.pictureUrl ? (
           <Image
             source={{ uri: workout.pictureUrl }}
@@ -38,7 +40,10 @@ export const WorkoutDetails = ({ workoutId, children }: WorkoutDetailsProps) => 
             className="h-72 w-full"
           />
         ) : null}
-        <View className="gap-3 px-4 pt-4">
+        <View
+          className="gap-3 px-4 pt-4"
+          style={workout.pictureUrl ? undefined : { marginTop: headerHeight }}
+        >
           <Text
             accessibilityRole="header"
             className="font-heading text-xl uppercase tracking-wide text-ink"
