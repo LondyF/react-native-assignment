@@ -1,4 +1,7 @@
+export { DEFAULT_WORKOUT_ID } from './api/workout-query';
+export { WorkoutDetails } from './components/workout-details';
 export { WorkoutList } from './components/workout-list';
+export { useWorkout } from './hooks/use-workout';
 export { useWorkouts } from './hooks/use-workouts';
 export type {
   Exercise,
