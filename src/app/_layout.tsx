@@ -16,6 +16,12 @@ import { useCSSVariable } from 'uniwind';
 import { HeaderTitle } from '@/components/header-title';
 import { queryClient } from '@/lib/query-client';
 
+if (__DEV__) {
+  // Dev-only side effect. A static import would ship Reactotron in release builds.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('@/lib/reactotron');
+}
+
 export const unstable_settings = { anchor: '(main)' };
 
 SplashScreen.preventAutoHideAsync();
@@ -64,6 +70,10 @@ const RootLayout = () => {
             headerTitle: '',
             headerTintColor: String(surface),
           }}
+        />
+        <Stack.Screen
+          name="session/[id]"
+          options={{ presentation: 'fullScreenModal', headerShown: false }}
         />
       </Stack>
     </QueryClientProvider>

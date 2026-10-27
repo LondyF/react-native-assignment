@@ -1,7 +1,6 @@
-import { useHeaderHeight } from 'expo-router/react-navigation';
-import type { ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
+import { Button } from '@/components/button';
 import { ErrorState } from '@/components/error-state';
 import { Image } from '@/components/image';
 import { LoadingState } from '@/components/loading-state';
@@ -11,12 +10,11 @@ import { getExercises, getTargetBodyParts } from '../model/workout-summary';
 
 type WorkoutDetailsProps = {
   workoutId: string;
-  children?: ReactNode;
+  onStartWorkout: () => void;
 };
 
-export const WorkoutDetails = ({ workoutId, children }: WorkoutDetailsProps) => {
+export const WorkoutDetails = ({ workoutId, onStartWorkout }: WorkoutDetailsProps) => {
   const { data: workout, isPending, refetch } = useWorkout(workoutId);
-  const headerHeight = useHeaderHeight();
 
   if (isPending) {
     return <LoadingState />;
@@ -32,18 +30,13 @@ export const WorkoutDetails = ({ workoutId, children }: WorkoutDetailsProps) => 
   return (
     <View className="flex-1 bg-background">
       <ScrollView contentInsetAdjustmentBehavior="never" contentContainerClassName="pb-4">
-        {workout.pictureUrl ? (
-          <Image
-            source={{ uri: workout.pictureUrl }}
-            accessibilityLabel={workout.name}
-            contentFit="cover"
-            className="h-72 w-full"
-          />
-        ) : null}
-        <View
-          className="gap-3 px-4 pt-4"
-          style={workout.pictureUrl ? undefined : { marginTop: headerHeight }}
-        >
+        <Image
+          source={{ uri: workout.pictureUrl }}
+          accessibilityLabel={workout.name}
+          contentFit="cover"
+          className="h-72 w-full"
+        />
+        <View className="gap-3 px-4 pt-4">
           <Text
             accessibilityRole="header"
             className="font-heading text-xl uppercase tracking-wide text-ink"
@@ -70,7 +63,9 @@ export const WorkoutDetails = ({ workoutId, children }: WorkoutDetailsProps) => 
           ) : null}
         </View>
       </ScrollView>
-      <View className="px-4 pb-4 pt-2">{children}</View>
+      <View className="px-4 pb-4 pt-2">
+        <Button label="Start workout" onPress={onStartWorkout} />
+      </View>
     </View>
   );
 };

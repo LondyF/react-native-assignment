@@ -36,6 +36,6 @@ export type Workout = {
   name: string;
   description: string | null;
   level: string | null;
-  pictureUrl: string | null;
+  pictureUrl: string;
   sections: Section[];
 };

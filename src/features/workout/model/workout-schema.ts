@@ -53,7 +53,7 @@ export const workoutSchema = z
     name: z.string(),
     description: z.string().nullish(),
     levelIndex: z.array(z.string()).nullish(),
-    picture: z.object({ url: z.string() }).nullish(),
+    picture: z.object({ url: z.string() }),
     warmUp: exerciseListSchema,
     powerSet: exerciseListSchema,
     coolDown: exerciseListSchema,
@@ -63,7 +63,7 @@ export const workoutSchema = z
     name: raw.name,
     description: raw.description ?? null,
     level: raw.levelIndex?.[0] ?? null,
-    pictureUrl: raw.picture?.url ?? null,
+    pictureUrl: raw.picture.url,
     sections: SECTION_KEYS.map((key) => ({ key, exercises: raw[key] ?? [] })),
   }));
 
