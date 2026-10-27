@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 
 import { queryClient } from '@/lib/query-client';
 
+export const unstable_settings = { anchor: '(main)' };
+
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
