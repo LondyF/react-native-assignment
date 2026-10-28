@@ -12,6 +12,7 @@ import { PlayerControls } from './player-controls';
 import { RestStep } from './rest-step';
 import { SectionTabs } from './section-tabs';
 import { SessionHeader } from './session-header';
+import { WorkoutComplete } from './workout-complete';
 
 type WorkoutSessionProps = {
   workoutId: string;
@@ -21,6 +22,10 @@ type WorkoutSessionProps = {
 export const WorkoutSession = ({ workoutId, onClose }: WorkoutSessionProps) => {
   const session = useWorkoutSession(workoutId);
   const { top, bottom } = useSafeAreaInsets();
+
+  if (session.status === 'completed') {
+    return <WorkoutComplete onDone={onClose} />;
+  }
 
   if (session.status === 'loading') {
     return <LoadingState />;

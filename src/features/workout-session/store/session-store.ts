@@ -47,7 +47,7 @@ export const sessionStore = create<SessionStore>()(
     (set, get) => {
       const goToStep = (stepIndex: number, steps: Step[]) => {
         if (stepIndex >= steps.length) {
-          set({ ...initialSession, status: 'completed' });
+          set({ ...initialSession, status: 'completed', workoutId: get().workoutId });
           return;
         }
         set({ stepIndex, timer: startTimerForStep(steps[stepIndex], Date.now()) });

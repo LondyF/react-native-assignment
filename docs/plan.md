@@ -63,9 +63,13 @@ Change:
 
 ## Milestone 4: workout complete
 
-- [ ] Copy `components/workout-complete.tsx` from the stash and change `PrimaryButton` to `Button`.
-- [ ] `WorkoutSession` shows it when `status` is `completed`. Its button calls `end`, then `onClose`.
-- [ ] Completing a workout clears the persisted session, because only active sessions are persisted.
+- [x] Completing the last step keeps `workoutId` in the store, so the session route knows which workout finished.
+- [x] `useWorkoutSession` returns `completed` when the store's session for this workout has completed.
+- [x] Copy `components/workout-complete.tsx` from the stash and change `PrimaryButton` to `Button`. Delete the unused `src/components/primary-button.tsx`.
+- [x] `WorkoutSession` shows it full screen, without the header or section tabs, when the session is completed. Done calls `onClose`, which goes back to the workout details. It does not call `end`: the next `start` replaces a completed session.
+- [x] Completing a workout clears the persisted session, because only active sessions are persisted.
+- [x] Store tests: `next` on the last step completes and keeps `workoutId`, a completed session persists as `initialSession`, and `start` after completing begins at step 0.
+- [x] Component test: Done calls `onClose`.
 
 ## Milestone 5: timed exercises
 
@@ -77,6 +81,7 @@ Change:
 ## Milestone 6: resume on launch
 
 - [ ] When the app opens with an active session, go straight to `/session/[workoutId]`.
+- [ ] The details screen shows "Resume workout" while this workout's session is active.
 - [ ] Test the edge cases from the brief by hand: close mid-set, close during a rest, and reopen after the rest would have ended.
 
 ## Milestone 7: set inputs and ending early

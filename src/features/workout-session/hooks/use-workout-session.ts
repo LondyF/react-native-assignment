@@ -17,6 +17,7 @@ import {
 export type WorkoutSessionView =
   | { status: 'loading' }
   | { status: 'error'; retry: () => void }
+  | { status: 'completed' }
   | {
       status: 'ready';
       steps: Step[];
@@ -38,6 +39,7 @@ export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
   const actions = useWorkoutSessionActions();
   const { data: workout, isPending, refetch } = useWorkout(workoutId);
 
+  const isCompleted = sessionStatus === 'completed' && sessionWorkoutId === workoutId;
   const isActive = sessionStatus === 'active' && sessionWorkoutId === workoutId;
   const steps = useMemo(() => (workout ? buildSteps(workout) : []), [workout]);
   const isStale = isActive && workout !== undefined && stepIndex >= steps.length;
@@ -46,6 +48,7 @@ export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
     if (isStale) actions.end();
   }, [isStale, actions]);
 
+  if (isCompleted) return { status: 'completed' };
   if (!isActive || isPending || isStale) return { status: 'loading' };
   if (!workout) return { status: 'error', retry: refetch };
 

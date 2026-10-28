@@ -86,7 +86,7 @@ describe('next', () => {
     sessionStore.setState({ stepIndex: steps.length - 1 });
     actions.next(steps);
 
-    expect(getState()).toMatchObject({ status: 'completed', workoutId: null, timer: null });
+    expect(getState()).toMatchObject({ status: 'completed', workoutId: WORKOUT_ID, timer: null });
   });
 });
 
@@ -196,6 +196,15 @@ describe('persistence', () => {
 
     expect(getState().status).toBe('completed');
     expect(readPersisted()).toEqual(initialSession);
+  });
+
+  it('starts from the first step after completing a workout', () => {
+    actions.start(WORKOUT_ID, steps);
+    sessionStore.setState({ stepIndex: steps.length - 1 });
+    actions.next(steps);
+    actions.start(WORKOUT_ID, steps);
+
+    expect(getState()).toMatchObject({ status: 'active', workoutId: WORKOUT_ID, stepIndex: 0 });
   });
 
   it('restores an active session on rehydrate and keeps the actions', async () => {
