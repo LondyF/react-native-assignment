@@ -16,15 +16,16 @@ import {
 type SessionState = {
   status: 'idle' | 'active' | 'completed' | 'ended';
   workoutId: string | null;
+  steps: Step[];
   stepIndex: number;
   timer: Timer | null;
 };
 
 type SessionActions = {
   start: (workoutId: string, steps: Step[]) => void;
-  next: (steps: Step[]) => void;
-  skip: (steps: Step[]) => void;
-  previous: (steps: Step[]) => void;
+  next: () => void;
+  skip: () => void;
+  previous: () => void;
   adjustRest: (deltaMs: number) => void;
   togglePause: () => void;
   pauseTimer: () => void;
@@ -35,10 +36,13 @@ type SessionActions = {
 type SessionStore = SessionState & { actions: SessionActions };
 
 const SESSION_STORAGE_KEY = 'workout-session';
+// Bump when the persisted shape changes. Older saved sessions are discarded.
+const SESSION_STORAGE_VERSION = 1;
 
 export const initialSession: SessionState = {
   status: 'idle',
   workoutId: null,
+  steps: [],
   stepIndex: 0,
   timer: null,
 };
@@ -46,9 +50,10 @@ export const initialSession: SessionState = {
 export const sessionStore = create<SessionStore>()(
   persist(
     (set, get) => {
-      const goToStep = (stepIndex: number, steps: Step[]) => {
+      const goToStep = (stepIndex: number) => {
+        const { steps, workoutId } = get();
         if (stepIndex >= steps.length) {
-          set({ ...initialSession, status: 'completed', workoutId: get().workoutId });
+          set({ ...initialSession, status: 'completed', workoutId });
           return;
         }
         set({ stepIndex, timer: startTimerForStep(steps[stepIndex], Date.now()) });
@@ -67,16 +72,17 @@ export const sessionStore = create<SessionStore>()(
             set({
               status: 'active',
               workoutId,
+              steps,
               stepIndex: 0,
               timer: startTimerForStep(steps[0], Date.now()),
             });
           },
-          next: (steps) => goToStep(get().stepIndex + 1, steps),
-          skip: (steps) => goToStep(findNextExerciseIndex(steps, get().stepIndex), steps),
-          previous: (steps) => {
-            const previousIndex = findPreviousExerciseIndex(steps, get().stepIndex);
+          next: () => goToStep(get().stepIndex + 1),
+          skip: () => goToStep(findNextExerciseIndex(get().steps, get().stepIndex)),
+          previous: () => {
+            const previousIndex = findPreviousExerciseIndex(get().steps, get().stepIndex);
             if (previousIndex === -1) return;
-            goToStep(previousIndex, steps);
+            goToStep(previousIndex);
           },
           adjustRest: (deltaMs) => updateTimer((timer, now) => adjustTimer(timer, deltaMs, now)),
           togglePause: () =>
@@ -91,15 +97,18 @@ export const sessionStore = create<SessionStore>()(
     },
     {
       name: SESSION_STORAGE_KEY,
+      version: SESSION_STORAGE_VERSION,
       storage: createJSONStorage(() => mmkvStateStorage),
-      partialize: ({ status, workoutId, stepIndex, timer }) =>
-        status === 'active' ? { status, workoutId, stepIndex, timer } : initialSession,
+      migrate: () => initialSession,
+      partialize: ({ status, workoutId, steps, stepIndex, timer }): SessionState =>
+        status === 'active' ? { status, workoutId, steps, stepIndex, timer } : initialSession,
     },
   ),
 );
 
 export const useSessionStatus = () => sessionStore((state) => state.status);
 export const useSessionWorkoutId = () => sessionStore((state) => state.workoutId);
+export const useSessionSteps = () => sessionStore((state) => state.steps);
 export const useSessionStepIndex = () => sessionStore((state) => state.stepIndex);
 export const useSessionTimer = () => sessionStore((state) => state.timer);
 export const useWorkoutSessionActions = () => sessionStore((state) => state.actions);

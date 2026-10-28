@@ -1,22 +1,16 @@
-import { useEffect, useMemo } from 'react';
-
-import { useWorkout } from '@/features/workout';
-
-import { buildSteps } from '../model/build-steps';
 import type { Step } from '../model/step';
 import { findPreviousExerciseIndex } from '../model/step-navigation';
 import type { Timer } from '../model/timer';
 import {
   useSessionStatus,
   useSessionStepIndex,
+  useSessionSteps,
   useSessionTimer,
   useSessionWorkoutId,
   useWorkoutSessionActions,
 } from '../store/session-store';
 
 export type WorkoutSessionView =
-  | { status: 'loading' }
-  | { status: 'error'; retry: () => void }
   | { status: 'completed' }
   | { status: 'ended' }
   | { status: 'inactive' }
@@ -38,26 +32,15 @@ export type WorkoutSessionView =
 export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
   const sessionStatus = useSessionStatus();
   const sessionWorkoutId = useSessionWorkoutId();
+  const steps = useSessionSteps();
   const stepIndex = useSessionStepIndex();
   const timer = useSessionTimer();
   const actions = useWorkoutSessionActions();
-  const { data: workout, isPending, refetch } = useWorkout(workoutId);
 
-  const isCompleted = sessionStatus === 'completed' && sessionWorkoutId === workoutId;
-  const isEnded = sessionStatus === 'ended' && sessionWorkoutId === workoutId;
-  const isActive = sessionStatus === 'active' && sessionWorkoutId === workoutId;
-  const steps = useMemo(() => (workout ? buildSteps(workout) : []), [workout]);
-  const isStale = isActive && workout !== undefined && stepIndex >= steps.length;
-
-  useEffect(() => {
-    if (isStale) actions.reset();
-  }, [isStale, actions]);
-
-  if (isCompleted) return { status: 'completed' };
-  if (isEnded) return { status: 'ended' };
-  if (!isActive) return { status: 'inactive' };
-  if (isPending || isStale) return { status: 'loading' };
-  if (!workout) return { status: 'error', retry: refetch };
+  if (sessionWorkoutId !== workoutId) return { status: 'inactive' };
+  if (sessionStatus === 'completed') return { status: 'completed' };
+  if (sessionStatus === 'ended') return { status: 'ended' };
+  if (sessionStatus !== 'active') return { status: 'inactive' };
 
   return {
     status: 'ready',
@@ -66,9 +49,9 @@ export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
     stepIndex,
     timer,
     canGoPrevious: findPreviousExerciseIndex(steps, stepIndex) !== -1,
-    next: () => actions.next(steps),
-    skip: () => actions.skip(steps),
-    previous: () => actions.previous(steps),
+    next: actions.next,
+    skip: actions.skip,
+    previous: actions.previous,
     adjustRest: actions.adjustRest,
     togglePause: actions.togglePause,
     pause: actions.pauseTimer,

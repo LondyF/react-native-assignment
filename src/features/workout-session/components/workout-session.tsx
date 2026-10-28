@@ -2,7 +2,6 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ErrorState } from '@/components/error-state';
-import { LoadingState } from '@/components/loading-state';
 
 import { useWorkoutSession } from '../hooks/use-workout-session';
 import { SECTION_LABELS } from '../model/section-labels';
@@ -32,10 +31,6 @@ export const WorkoutSession = ({ workoutId, onClose, onRequestStop }: WorkoutSes
     return <View className="flex-1 bg-background" />;
   }
 
-  if (session.status === 'loading') {
-    return <LoadingState />;
-  }
-
   if (session.status === 'inactive') {
     return (
       <ErrorState
@@ -44,10 +39,6 @@ export const WorkoutSession = ({ workoutId, onClose, onRequestStop }: WorkoutSes
         onRetry={onClose}
       />
     );
-  }
-
-  if (session.status === 'error') {
-    return <ErrorState message="We could not load this workout." onRetry={session.retry} />;
   }
 
   const { step, steps, stepIndex, canGoPrevious } = session;

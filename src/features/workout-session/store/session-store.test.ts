@@ -31,6 +31,7 @@ describe('start', () => {
     expect(getState()).toMatchObject({
       status: 'active',
       workoutId: WORKOUT_ID,
+      steps,
       stepIndex: 0,
       timer: null,
     });
@@ -38,8 +39,8 @@ describe('start', () => {
 
   it('resumes an active session for the same workout', () => {
     actions.start(WORKOUT_ID, steps);
-    actions.next(steps);
-    actions.next(steps);
+    actions.next();
+    actions.next();
     actions.start(WORKOUT_ID, steps);
 
     expect(getState()).toMatchObject({ status: 'active', stepIndex: 2 });
@@ -47,7 +48,7 @@ describe('start', () => {
 
   it('starts from the first step for a different workout', () => {
     actions.start(WORKOUT_ID, steps);
-    actions.next(steps);
+    actions.next();
     actions.start('another-workout', steps);
 
     expect(getState()).toMatchObject({
@@ -69,22 +70,22 @@ describe('next', () => {
   beforeEach(() => actions.start(WORKOUT_ID, steps));
 
   it('starts a running timer when it lands on a rest', () => {
-    actions.next(steps);
+    actions.next();
 
     expect(getState().stepIndex).toBe(1);
     expect(getState().timer).toEqual({ kind: 'running', endsAt: NOW + 30_000 });
   });
 
   it('clears the timer when it lands on a set', () => {
-    actions.next(steps);
-    actions.next(steps);
+    actions.next();
+    actions.next();
 
     expect(getState()).toMatchObject({ stepIndex: 2, timer: null });
   });
 
   it('completes the workout after the last step', () => {
     sessionStore.setState({ stepIndex: steps.length - 1 });
-    actions.next(steps);
+    actions.next();
 
     expect(getState()).toMatchObject({ status: 'completed', workoutId: WORKOUT_ID, timer: null });
   });
@@ -94,27 +95,27 @@ describe('skip and previous', () => {
   beforeEach(() => actions.start(WORKOUT_ID, steps));
 
   it('skip jumps over a rest', () => {
-    actions.skip(steps);
+    actions.skip();
 
     expect(getState().stepIndex).toBe(2);
   });
 
   it('skip completes the workout from the last step', () => {
     sessionStore.setState({ stepIndex: steps.length - 1 });
-    actions.skip(steps);
+    actions.skip();
 
     expect(getState().status).toBe('completed');
   });
 
   it('previous steps back over a rest', () => {
     sessionStore.setState({ stepIndex: 4 });
-    actions.previous(steps);
+    actions.previous();
 
     expect(getState().stepIndex).toBe(2);
   });
 
   it('previous does nothing on the first step', () => {
-    actions.previous(steps);
+    actions.previous();
 
     expect(getState().stepIndex).toBe(0);
   });
@@ -123,7 +124,7 @@ describe('skip and previous', () => {
 describe('timer actions', () => {
   beforeEach(() => {
     actions.start(WORKOUT_ID, steps);
-    actions.next(steps);
+    actions.next();
   });
 
   it('adds and removes fifteen seconds', () => {
@@ -159,7 +160,7 @@ describe('timer actions', () => {
   });
 
   it('ignores timer actions when there is no timer', () => {
-    actions.next(steps);
+    actions.next();
     actions.adjustRest(15_000);
     actions.togglePause();
 
@@ -181,7 +182,7 @@ describe('end', () => {
 
   it('lets start begin at step 0 afterwards', () => {
     actions.start(WORKOUT_ID, steps);
-    actions.next(steps);
+    actions.next();
     actions.end();
     actions.start(WORKOUT_ID, steps);
 
@@ -209,11 +210,12 @@ describe('persistence', () => {
 
   it('persists an active session without the actions', () => {
     actions.start(WORKOUT_ID, steps);
-    actions.next(steps);
+    actions.next();
 
     expect(readPersisted()).toEqual({
       status: 'active',
       workoutId: WORKOUT_ID,
+      steps,
       stepIndex: 1,
       timer: { kind: 'running', endsAt: NOW + 30_000 },
     });
@@ -222,7 +224,7 @@ describe('persistence', () => {
   it('persists idle once the workout is completed', () => {
     actions.start(WORKOUT_ID, steps);
     sessionStore.setState({ stepIndex: steps.length - 1 });
-    actions.next(steps);
+    actions.next();
 
     expect(getState().status).toBe('completed');
     expect(readPersisted()).toEqual(initialSession);
@@ -231,7 +233,7 @@ describe('persistence', () => {
   it('starts from the first step after completing a workout', () => {
     actions.start(WORKOUT_ID, steps);
     sessionStore.setState({ stepIndex: steps.length - 1 });
-    actions.next(steps);
+    actions.next();
     actions.start(WORKOUT_ID, steps);
 
     expect(getState()).toMatchObject({ status: 'active', workoutId: WORKOUT_ID, stepIndex: 0 });
@@ -239,7 +241,7 @@ describe('persistence', () => {
 
   it('restores an active session on rehydrate and keeps the actions', async () => {
     actions.start(WORKOUT_ID, steps);
-    actions.next(steps);
+    actions.next();
     const saved = mmkvStateStorage.getItem('workout-session') as string;
 
     sessionStore.setState(initialSession);
@@ -248,9 +250,37 @@ describe('persistence', () => {
 
     expect(getState()).toMatchObject({
       status: 'active',
+      steps,
       stepIndex: 1,
       timer: { kind: 'running', endsAt: NOW + 30_000 },
     });
     expect(getState().actions).toBe(actions);
+  });
+
+  it('keeps navigating the saved steps after rehydrate', async () => {
+    actions.start(WORKOUT_ID, steps);
+    const saved = mmkvStateStorage.getItem('workout-session') as string;
+
+    sessionStore.setState(initialSession);
+    mmkvStateStorage.setItem('workout-session', saved);
+    await sessionStore.persist.rehydrate();
+    actions.skip();
+
+    expect(getState()).toMatchObject({ status: 'active', stepIndex: 2, timer: null });
+  });
+
+  it('discards a session saved before steps were persisted', async () => {
+    actions.start(WORKOUT_ID, steps);
+    mmkvStateStorage.setItem(
+      'workout-session',
+      JSON.stringify({
+        state: { status: 'active', workoutId: WORKOUT_ID, stepIndex: 4, timer: null },
+        version: 0,
+      }),
+    );
+
+    await sessionStore.persist.rehydrate();
+
+    expect(getState()).toMatchObject(initialSession);
   });
 });
