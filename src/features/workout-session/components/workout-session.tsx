@@ -12,6 +12,7 @@ import { PlayerControls } from './player-controls';
 import { RestStep } from './rest-step';
 import { SectionTabs } from './section-tabs';
 import { SessionHeader } from './session-header';
+import { TimedStep } from './timed-step';
 import { WorkoutComplete } from './workout-complete';
 
 type WorkoutSessionProps = {
@@ -57,7 +58,21 @@ export const WorkoutSession = ({ workoutId, onClose }: WorkoutSessionProps) => {
             onAdjustRest={session.adjustRest}
           />
         </View>
-      ) : (
+      ) : null}
+      {step.kind === 'timed' ? (
+        <TimedStep
+          key={stepIndex}
+          step={step}
+          timer={session.timer}
+          canGoPrevious={canGoPrevious}
+          onNext={session.next}
+          onSkip={session.skip}
+          onPrevious={session.previous}
+          onTogglePause={session.togglePause}
+          onPause={session.pause}
+        />
+      ) : null}
+      {step.kind === 'set' ? (
         <>
           <View className="flex-1 px-4 pt-4">
             <CurrentExercise step={step} />
@@ -68,12 +83,12 @@ export const WorkoutSession = ({ workoutId, onClose }: WorkoutSessionProps) => {
               onPrevious={session.previous}
               onNext={session.skip}
               primaryIcon="checkmark"
-              primaryLabel={step.kind === 'set' ? 'Complete set' : 'Complete exercise'}
+              primaryLabel="Complete set"
               onPrimaryPress={session.next}
             />
           </View>
         </>
-      )}
+      ) : null}
     </View>
   );
 };

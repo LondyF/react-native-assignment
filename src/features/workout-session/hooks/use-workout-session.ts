@@ -29,6 +29,8 @@ export type WorkoutSessionView =
       skip: () => void;
       previous: () => void;
       adjustRest: (deltaMs: number) => void;
+      togglePause: () => void;
+      pause: () => void;
     };
 
 export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
@@ -63,5 +65,7 @@ export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
     skip: () => actions.skip(steps),
     previous: () => actions.previous(steps),
     adjustRest: actions.adjustRest,
+    togglePause: actions.togglePause,
+    pause: actions.pauseTimer,
   };
 };

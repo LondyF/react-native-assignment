@@ -73,10 +73,19 @@ Change:
 
 ## Milestone 5: timed exercises
 
-- [ ] The timed step shows a countdown and a progress bar (`TimedProgress` in the stash's `exercise-step.tsx`).
-- [ ] The main button pauses and resumes it (`togglePause`).
-- [ ] The countdown moves to the next step when it reaches zero.
-- [ ] `hooks/use-pause-on-background.ts` pauses a running exercise timer when the app goes to the background. Rest timers keep running.
+The store already has `togglePause` and `pauseTimer`, with tests. This milestone is UI, hooks and wiring.
+
+- [x] `useWorkoutSession`'s `ready` view exposes `togglePause` and `pause` (`pauseTimer`).
+- [x] `components/timed-step.tsx`, rendered as `<TimedStep key={stepIndex} />` beside `RestStep`, so `WorkoutSession` switches on rest, timed or set. It takes narrow props (`step`, `timer`, `canGoPrevious`, `onNext`, `onSkip`, `onPrevious`, `onTogglePause`, `onPause`), not the whole session. It renders `CurrentExercise`, `TimedProgress` and `PlayerControls`.
+- [x] `TimedProgress` (based on the stash's `exercise-step.tsx`) shows the remaining clock, the total, and a progress bar. The clock ticks through `useCountdown`. The bar fills smoothly with Reanimated, using `scaleX` in the `style` prop.
+- [x] `hooks/use-timer-progress.ts` returns a shared value with the remaining fraction: it snaps on every `timer` change and runs `withTiming` to 0 while running. `RestRing` and `TimedProgress` both use it, and the bar shows `1 - value`.
+- [x] The main button is pause/resume (`togglePause`), labelled "Pause exercise" or "Resume exercise" with a `pause.fill` or `play.fill` icon.
+- [x] Next calls `skip` on timed steps, like on sets, so skipping a timed exercise also skips its rest. Note this as a known limitation in the README.
+- [x] When the countdown reaches zero, it calls `next`, which goes into the rest.
+- [x] `hooks/use-pause-on-background.ts` takes an `onBackground` callback (kept in a latest ref, like `useCountdown`) and calls it only on `'background'`, not `'inactive'`, so Control Center does not pause a plank. `TimedStep` calls it with `onPause`, so rests are never paused. Coming back to the foreground does not resume: the user taps resume.
+- [x] `timed-step.test.tsx`: shows the clock and total; the main button label follows the timer kind and calls `onTogglePause`; Next calls `onSkip` and Previous calls `onPrevious`; with fake timers, passing the duration calls `onNext` once.
+- [x] `use-pause-on-background.test.ts`: `'background'` calls the callback, `'inactive'` does not, and unmounting removes the listener.
+- [x] No test for `use-timer-progress`, because Reanimated is mocked. Check the bar on the simulator instead.
 
 ## Milestone 6: resume on launch
 
