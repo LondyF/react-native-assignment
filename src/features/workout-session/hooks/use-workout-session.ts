@@ -17,7 +17,6 @@ import {
 export type WorkoutSessionView =
   | { status: 'loading' }
   | { status: 'error'; retry: () => void }
-  | { status: 'inactive' }
   | {
       status: 'ready';
       steps: Step[];
@@ -47,8 +46,7 @@ export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
     if (isStale) actions.end();
   }, [isStale, actions]);
 
-  if (!isActive) return { status: 'inactive' };
-  if (isPending || isStale) return { status: 'loading' };
+  if (!isActive || isPending || isStale) return { status: 'loading' };
   if (!workout) return { status: 'error', retry: refetch };
 
   return {

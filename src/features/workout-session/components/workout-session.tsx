@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,20 +16,13 @@ import { SessionHeader } from './session-header';
 type WorkoutSessionProps = {
   workoutId: string;
   onClose: () => void;
-  onInactive: () => void;
 };
 
-export const WorkoutSession = ({ workoutId, onClose, onInactive }: WorkoutSessionProps) => {
+export const WorkoutSession = ({ workoutId, onClose }: WorkoutSessionProps) => {
   const session = useWorkoutSession(workoutId);
   const { top, bottom } = useSafeAreaInsets();
 
-  const isInactive = session.status === 'inactive';
-
-  useEffect(() => {
-    if (isInactive) onInactive();
-  }, [isInactive, onInactive]);
-
-  if (session.status === 'loading' || session.status === 'inactive') {
+  if (session.status === 'loading') {
     return <LoadingState />;
   }
 

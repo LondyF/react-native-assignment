@@ -41,8 +41,7 @@ Change:
 ## Milestone 2: start a session and play through sets
 
 - [x] `hooks/use-start-workout.ts`, exported from the feature's `index.ts`, returns a function that builds the steps from the cached workout and calls `start`. Start workout calls it, then pushes `/session/[id]`. The session starts from that press, not from an effect, so a background refetch cannot restart it.
-- [x] `hooks/use-workout-session.ts` (adapted from the stash) takes the workout id from the route. It returns `loading`, `error`, `inactive` or `ready`, and `ready` comes with the actions, already bound to the steps.
-  - `inactive` means the store has no active session for this workout, for example after opening a deep link without starting. The screen redirects to `/workout/[id]`.
+- [x] `hooks/use-workout-session.ts` (adapted from the stash) takes the workout id from the route. It returns `loading`, `error` or `ready`, and `ready` comes with the actions, already bound to the steps.
   - Keep the stash's guard that ends a session whose stored step index no longer exists in the workout.
 - [x] `components/player-controls.tsx` from the stash. Previous is disabled on the first exercise.
 - [x] `WorkoutSession` renders the current step:
