@@ -40,27 +40,27 @@ Change:
 
 ## Milestone 2: start a session and play through sets
 
-- [ ] `hooks/use-start-workout.ts`, exported from the feature's `index.ts`, returns a function that builds the steps from the cached workout and calls `start`. Start workout calls it, then pushes `/session/[id]`. The session starts from that press, not from an effect, so a background refetch cannot restart it.
-- [ ] `hooks/use-workout-session.ts` (adapted from the stash) takes the workout id from the route. It returns `loading`, `error`, `inactive` or `ready`, and `ready` comes with the actions, already bound to the steps.
+- [x] `hooks/use-start-workout.ts`, exported from the feature's `index.ts`, returns a function that builds the steps from the cached workout and calls `start`. Start workout calls it, then pushes `/session/[id]`. The session starts from that press, not from an effect, so a background refetch cannot restart it.
+- [x] `hooks/use-workout-session.ts` (adapted from the stash) takes the workout id from the route. It returns `loading`, `error`, `inactive` or `ready`, and `ready` comes with the actions, already bound to the steps.
   - `inactive` means the store has no active session for this workout, for example after opening a deep link without starting. The screen redirects to `/workout/[id]`.
   - Keep the stash's guard that ends a session whose stored step index no longer exists in the workout.
-- [ ] `components/player-controls.tsx` from the stash. Previous is disabled on the first exercise.
-- [ ] `WorkoutSession` renders the current step:
+- [x] `components/player-controls.tsx` from the stash. Previous is disabled on the first exercise.
+- [x] `WorkoutSession` renders the current step:
   - The header title is the section label, or "Rest" during a rest.
   - Section tabs come from `getSectionProgress(steps, stepIndex)`.
   - A set step shows `CurrentExercise` and the controls: Previous, Complete set (calls `next`), and Next (calls `skip`, moving on without resting).
   - A timed step shows `CurrentExercise` with "Complete exercise" as its main button until milestone 5 adds the countdown.
-- [ ] `CurrentExercise` takes `SetStep | TimedStep` and reads `exerciseName` and `thumbnailUrl` from the step.
-- [ ] Close still goes back, and the session stays active.
+- [x] `CurrentExercise` takes `SetStep | TimedStep` and reads `exerciseName` and `thumbnailUrl` from the step.
+- [x] Close still goes back, and the session stays active.
 
 ## Milestone 3: rest timer
 
-- [ ] Copy from the stash: `components/rest-step.tsx`, `components/rest-ring.tsx` and `hooks/use-countdown.ts`.
-- [ ] The ring is animated with Reanimated.
-- [ ] Plus and minus 15 seconds call `adjustRest`. The timer never goes below zero.
-- [ ] Skip rest calls `next`.
-- [ ] When the countdown reaches zero, it calls `next`. This also handles reopening the app after the rest has already run out.
-- [ ] Component test: the plus and minus buttons call `adjustRest` with ±15,000 ms, and Skip rest calls `next`.
+- [x] Copy from the stash: `components/rest-step.tsx`, `components/rest-ring.tsx` and `hooks/use-countdown.ts`.
+- [x] The ring is animated with Reanimated.
+- [x] Plus and minus 15 seconds call `adjustRest`. The timer never goes below zero.
+- [x] Skip rest calls `next`.
+- [x] When the countdown reaches zero, it calls `next`. This also handles reopening the app after the rest has already run out.
+- [x] Component test: the plus and minus buttons call `adjustRest` with ±15,000 ms, and Skip rest calls `next`.
 
 ## Milestone 4: workout complete
 

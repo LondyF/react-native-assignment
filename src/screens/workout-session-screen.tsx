@@ -10,7 +10,11 @@ const WorkoutSessionScreen = () => {
     router.back();
   };
 
-  return <WorkoutSession workoutId={id} onClose={handleClose} />;
+  const handleInactive = () => {
+    router.replace({ pathname: '/workout/[id]', params: { id } });
+  };
+
+  return <WorkoutSession workoutId={id} onClose={handleClose} onInactive={handleInactive} />;
 };
 
 export default WorkoutSessionScreen;
