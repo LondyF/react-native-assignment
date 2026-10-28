@@ -4,7 +4,5 @@ dist
 ios
 android
 bun.lock
-.agents
-skills-lock.json
 src/uniwind-types.d.ts
 docs/assignment.md
