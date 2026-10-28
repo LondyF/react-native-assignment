@@ -23,6 +23,8 @@ export const WorkoutList = ({ onSelectWorkout }: WorkoutListProps) => {
     return <ErrorState message="We could not load the workouts." onRetry={refetch} />;
   }
 
+  const playableWorkouts = workouts.filter((workout) => getExercises(workout).length > 0);
+
   const renderWorkout = ({ item }: { item: Workout }) => {
     const handlePress = () => onSelectWorkout(item.id);
 
@@ -55,7 +57,7 @@ export const WorkoutList = ({ onSelectWorkout }: WorkoutListProps) => {
 
   return (
     <FlatList
-      data={workouts}
+      data={playableWorkouts}
       keyExtractor={(workout) => workout.id}
       renderItem={renderWorkout}
       contentContainerClassName="gap-4 p-4"

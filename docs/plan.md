@@ -89,9 +89,18 @@ The store already has `togglePause` and `pauseTimer`, with tests. This milestone
 
 ## Milestone 6: resume on launch
 
-- [ ] When the app opens with an active session, go straight to `/session/[workoutId]`.
-- [ ] The details screen shows "Resume workout" while this workout's session is active.
-- [ ] Test the edge cases from the brief by hand: close mid-set, close during a rest, and reopen after the rest would have ended.
+The store hydrates synchronously from MMKV, so the first render already knows whether a session is active. Only active sessions are persisted, so on launch the status is `active` or `idle`, never `completed`.
+
+- [ ] `hooks/use-active-session-workout-id.ts`, exported from the feature's `index.ts`, returns the session's `workoutId` while its status is `active`, and `null` otherwise. The store stays private.
+- [ ] The root layout runs a one-shot effect once the fonts are loaded and the Stack is mounted. When a session is active, it pushes `/workout/[id]` and then `/session/[id]`, so the stack matches a normal session and Close and Done land on the details screen. It runs once per cold launch, so coming back from the background or closing a session does not trigger it again.
+- [ ] `WorkoutDetails` takes an `isInProgress` boolean and labels its button "Resume workout" or "Start workout". The details screen sets it from `useActiveSessionWorkoutId() === id`, because the `workout` feature cannot import `workout-session`.
+- [ ] When a different workout is in progress, Start first asks with `Alert.alert`: "You have a workout in progress. Starting this one ends it.", with Cancel and Start. The store's `start` already replaces the session, so it does not change.
+- [ ] `useWorkoutSession` returns `inactive` when the store has no active or completed session for this workout. This covers a session the stale guard ended and a `/session/[id]` deep link with no session behind it. Without it, the screen shows a spinner forever.
+- [ ] `WorkoutSession` shows `inactive` as an `ErrorState`: "Your progress on this workout could not be restored.", with a "Back to workout" button that calls `onClose`.
+- [ ] `ErrorState` takes an optional `actionLabel`, defaulting to "Try again".
+- [ ] `use-workout-session.test.ts`, with `useWorkout` mocked to return the fixture workout: `inactive` with no session, `inactive` after the stale guard ends a session, and `ready` at the stored step when the store was seeded mid-workout.
+- [ ] `workout-details.test.tsx`: `isInProgress` switches the label between "Start workout" and "Resume workout".
+- [ ] Check by hand on the simulator: the launch redirect, the confirmation Alert, closing mid-set, closing during a rest, and reopening after the rest would have ended.
 
 ## Milestone 7: set inputs and ending early
 

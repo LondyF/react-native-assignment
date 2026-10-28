@@ -10,10 +10,15 @@ import { getExercises, getTargetBodyParts } from '../model/workout-summary';
 
 type WorkoutDetailsProps = {
   workoutId: string;
+  isInProgress: boolean;
   onStartWorkout: () => void;
 };
 
-export const WorkoutDetails = ({ workoutId, onStartWorkout }: WorkoutDetailsProps) => {
+export const WorkoutDetails = ({
+  workoutId,
+  isInProgress,
+  onStartWorkout,
+}: WorkoutDetailsProps) => {
   const { data: workout, isPending, refetch } = useWorkout(workoutId);
 
   if (isPending) {
@@ -64,7 +69,10 @@ export const WorkoutDetails = ({ workoutId, onStartWorkout }: WorkoutDetailsProp
         </View>
       </ScrollView>
       <View className="px-4 pb-4 pt-2">
-        <Button label="Start workout" onPress={onStartWorkout} />
+        <Button
+          label={isInProgress ? 'Resume workout' : 'Start workout'}
+          onPress={onStartWorkout}
+        />
       </View>
     </View>
   );

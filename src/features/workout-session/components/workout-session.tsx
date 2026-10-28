@@ -32,6 +32,16 @@ export const WorkoutSession = ({ workoutId, onClose }: WorkoutSessionProps) => {
     return <LoadingState />;
   }
 
+  if (session.status === 'inactive') {
+    return (
+      <ErrorState
+        message="Your progress on this workout could not be restored."
+        actionLabel="Back to workout"
+        onRetry={onClose}
+      />
+    );
+  }
+
   if (session.status === 'error') {
     return <ErrorState message="We could not load this workout." onRetry={session.retry} />;
   }
