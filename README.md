@@ -29,7 +29,7 @@ nvm use
 bun install
 ```
 
-The Contentful endpoint and delivery token are committed in `.env`, so there is nothing to configure.
+The Contentful endpoint and delivery token are committed in `.env`, so there is nothing to configure. I wouldn't normally commit an `.env` file, but the token is the read-only one from the brief, so I did it for simplicity.
 
 ### Run
 
