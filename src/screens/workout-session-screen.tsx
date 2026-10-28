@@ -10,7 +10,11 @@ const WorkoutSessionScreen = () => {
     router.back();
   };
 
-  return <WorkoutSession workoutId={id} onClose={handleClose} />;
+  const handleRequestStop = () => {
+    router.push({ pathname: '/session/[id]/stop', params: { id } });
+  };
+
+  return <WorkoutSession workoutId={id} onClose={handleClose} onRequestStop={handleRequestStop} />;
 };
 
 export default WorkoutSessionScreen;

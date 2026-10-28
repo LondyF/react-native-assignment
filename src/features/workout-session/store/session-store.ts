@@ -14,7 +14,7 @@ import {
 } from '../model/timer';
 
 type SessionState = {
-  status: 'idle' | 'active' | 'completed';
+  status: 'idle' | 'active' | 'completed' | 'ended';
   workoutId: string | null;
   stepIndex: number;
   timer: Timer | null;
@@ -29,6 +29,7 @@ type SessionActions = {
   togglePause: () => void;
   pauseTimer: () => void;
   end: () => void;
+  reset: () => void;
 };
 
 type SessionStore = SessionState & { actions: SessionActions };
@@ -83,7 +84,8 @@ export const sessionStore = create<SessionStore>()(
               timer.kind === 'running' ? pauseTimer(timer, now) : resumeTimer(timer, now),
             ),
           pauseTimer: () => updateTimer(pauseTimer),
-          end: () => set(initialSession),
+          end: () => set({ ...initialSession, status: 'ended', workoutId: get().workoutId }),
+          reset: () => set(initialSession),
         },
       };
     },

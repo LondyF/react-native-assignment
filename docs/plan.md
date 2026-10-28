@@ -104,8 +104,34 @@ The store hydrates synchronously from MMKV, so the first render already knows wh
 
 ## Milestone 7: set inputs and ending early
 
-- [ ] Kgs and Reps fields on a set step (`SetFields` in the stash's `exercise-step.tsx`), starting with the planned reps.
-- [ ] The close button opens the "What stopped you?" bottom sheet. End workout calls `end` and goes back.
+Start after milestone 6 is ticked.
+
+Set inputs:
+
+- [x] `components/set-step.tsx`, rendered as `<SetStep key={stepIndex} />` beside `TimedStep`, renders `CurrentExercise`, the Kgs and Reps fields (based on `SetFields` and `NumberField` in the stash's `exercise-step.tsx`) and `PlayerControls`. The key resets the fields for each set.
+- [x] Kgs and Reps live in `useState` only. They are not stored or persisted. Note this as a known limitation in the README, with the fix: a `setLogs` map in the store, keyed by step index and written by `next`.
+- [x] Kgs uses `decimal-pad`, starts empty and shows a `0` placeholder. Reps uses `number-pad` and starts at the planned reps.
+- [x] The fields strip characters that are not numbers: Reps keeps digits only, Kgs keeps digits and decimal separators. This covers paste and hardware keyboards.
+- [x] Tapping outside the fields calls `Keyboard.dismiss`. A `KeyboardAvoidingView` (`padding` on iOS) keeps the controls above the keyboard.
+- [x] `set-step.test.tsx`: Reps starts at the planned reps, typing `12a` leaves `12`, and Complete set calls `onNext`.
+
+Store:
+
+- [x] Add `'ended'` to the status. `end()` sets `{ ...initialSession, status: 'ended', workoutId }`, so the session screen knows the user stopped this workout. Only active sessions are persisted, so `ended` never reaches MMKV.
+- [x] New `reset()` sets `initialSession`. The stale guard in `useWorkoutSession` calls `reset` instead of `end`, so it still shows the `inactive` error.
+- [x] `useWorkoutSession` returns `ended` for an ended session of this workout. `WorkoutSession` renders a plain `bg-background` view for it, so nothing flashes while the screens dismiss.
+- [x] Store tests: `end` sets `ended` and keeps `workoutId`, an ended session persists as `initialSession`, `reset` sets `initialSession`, and `start` after `end` begins at step 0.
+
+Stop sheet:
+
+- [x] Move `src/app/session/[id].tsx` to `session/[id]/index.tsx` and add `session/[id]/stop.tsx`. Register the sheet in the root `Stack` with `presentation: 'formSheet'`, `sheetAllowedDetents: 'fitToContents'`, `sheetGrabberVisible: true` and `headerShown: false`.
+- [x] `model/stop-reasons.ts`: a `STOP_REASONS` tuple (Too Hard, Too Easy, Run out of time, Busy Equipment, Did not enjoy this workout, Other) and a `StopReason` type.
+- [x] `components/stop-session-sheet.tsx`, exported from the feature's `index.ts`: "What stopped you?", a close button, the reasons as a radio group (`radiogroup`, and `radio` rows with `checked` state), End workout and Continue later. The selected reason is `useState<StopReason | null>(null)`. End workout is disabled until a reason is picked. The reason is not stored. Note this in the README.
+- [x] `src/screens/stop-session-screen.tsx` uses `useWorkoutSessionActions`. End workout calls `end()` and then `router.dismissTo` the workout details. Continue later only calls `dismissTo`, so the session stays active. The close button and swipe-down call `router.back()`, back to the session.
+- [x] `WorkoutSession`'s header close calls a new `onRequestStop`, which pushes `/session/[id]/stop`. On a timed step it calls `pause` first. Rests keep running, as they do when the app goes to the background. Done on `WorkoutComplete` and "Back to workout" on the `inactive` error still call `onClose`.
+- [x] Note Continue later in the README as a deviation from the design, kept so a session can be left and resumed without closing the app.
+- [x] `stop-session-sheet.test.tsx`: End workout is disabled at first, enabled after picking a reason, and calls `onEnd`. Continue later calls `onContinueLater`.
+- [x] Check by hand on the simulator: the sheet fits its content, a timed step is paused after the sheet closes, End workout lands on details showing "Start workout" without an error flash, and Continue later lands on details showing "Resume workout".
 
 ## Milestone 8: submission
 

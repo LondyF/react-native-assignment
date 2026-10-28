@@ -93,8 +93,17 @@ const RootLayout = () => {
           }}
         />
         <Stack.Screen
-          name="session/[id]"
+          name="session/[id]/index"
           options={{ presentation: 'fullScreenModal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="session/[id]/stop"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: 'fitToContents',
+            sheetGrabberVisible: true,
+            headerShown: false,
+          }}
         />
       </Stack>
     </QueryClientProvider>

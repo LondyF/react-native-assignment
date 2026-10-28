@@ -168,15 +168,45 @@ describe('timer actions', () => {
 });
 
 describe('end', () => {
-  it('resets an active session', () => {
+  it('marks the session ended and keeps the workout id', () => {
     actions.start(WORKOUT_ID, steps);
     actions.end();
+
+    expect(getState()).toMatchObject({
+      ...initialSession,
+      status: 'ended',
+      workoutId: WORKOUT_ID,
+    });
+  });
+
+  it('lets start begin at step 0 afterwards', () => {
+    actions.start(WORKOUT_ID, steps);
+    actions.next(steps);
+    actions.end();
+    actions.start(WORKOUT_ID, steps);
+
+    expect(getState()).toMatchObject({ status: 'active', stepIndex: 0 });
+  });
+});
+
+describe('reset', () => {
+  it('returns to the initial session', () => {
+    actions.start(WORKOUT_ID, steps);
+    actions.reset();
 
     expect(getState()).toMatchObject(initialSession);
   });
 });
 
 describe('persistence', () => {
+  it('persists idle once the session is ended', () => {
+    actions.start(WORKOUT_ID, steps);
+    actions.end();
+
+    expect(getState().status).toBe('ended');
+    expect(readPersisted()).toEqual(initialSession);
+  });
+
   it('persists an active session without the actions', () => {
     actions.start(WORKOUT_ID, steps);
     actions.next(steps);

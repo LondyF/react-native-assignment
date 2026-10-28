@@ -18,6 +18,7 @@ export type WorkoutSessionView =
   | { status: 'loading' }
   | { status: 'error'; retry: () => void }
   | { status: 'completed' }
+  | { status: 'ended' }
   | { status: 'inactive' }
   | {
       status: 'ready';
@@ -43,15 +44,17 @@ export const useWorkoutSession = (workoutId: string): WorkoutSessionView => {
   const { data: workout, isPending, refetch } = useWorkout(workoutId);
 
   const isCompleted = sessionStatus === 'completed' && sessionWorkoutId === workoutId;
+  const isEnded = sessionStatus === 'ended' && sessionWorkoutId === workoutId;
   const isActive = sessionStatus === 'active' && sessionWorkoutId === workoutId;
   const steps = useMemo(() => (workout ? buildSteps(workout) : []), [workout]);
   const isStale = isActive && workout !== undefined && stepIndex >= steps.length;
 
   useEffect(() => {
-    if (isStale) actions.end();
+    if (isStale) actions.reset();
   }, [isStale, actions]);
 
   if (isCompleted) return { status: 'completed' };
+  if (isEnded) return { status: 'ended' };
   if (!isActive) return { status: 'inactive' };
   if (isPending || isStale) return { status: 'loading' };
   if (!workout) return { status: 'error', retry: refetch };
